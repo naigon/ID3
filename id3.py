@@ -36,23 +36,20 @@ def main():
 		count_n = beachs.count(v_beach[1])
 		entropia_exemplos = -count_y/n_exemplos * math.log(count_y/n_exemplos, 2) - count_n/n_exemplos * math.log(count_n/n_exemplos, 2)
 		print ('Entropia dos exemplos: ' , entropia_exemplos)
-		entropia_wind = entropia(winds, n_exemplos, beachs)
+		#entropia_wind = entropia(winds, n_exemplos, beachs)
 		
+'''
 def calc_entropia(atributo_alvo, valores_atributo, n_exemplos, classes):
 	count_p = 0
 	count_n = 0
 	tam = len(valores_atributo)
 	count = list(range(tam))
-	
-	for i in range(tam):
-		count[i] = atributo_alvo.count(valores_atributo[i])
 		
-	for i in atributo_alvo:
-		if atributo_alvo[i] and classes[i]=='Yes':
+	for i in range(len(atributo_alvo)):
+		if atributo_alvo[i]== and classes[i]=='Yes':
 			count_p = count_p + 1
 		elif: atributo_alvo[i] and classes[i]=='No':
 			count_n = count_n + 1
-	return 
 
 
 def calc_ganho(entropia, atributo_alvo, valores_atributo, n_exemplos):
@@ -64,7 +61,7 @@ def calc_ganho(entropia, atributo_alvo, valores_atributo, n_exemplos):
 	ganho = entropia - desconto
 	return ganho
 		
-
+'''
 
 
 main()
