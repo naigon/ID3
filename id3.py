@@ -12,8 +12,8 @@ def main():
 		beachs = []
 		v_outlook = ['Sunny','Overcast','Rain','','','','','','','','','','','','']
 		v_temperature = ['Hot','Mild','Cool','','','','','','','','','','','','']
-		v_humidity = ['High','Normal','','','','','','','','','','','',''] 
-		v_wind = ['Weak','Strong','','','','','','','','','','','','','']
+		v_humidity = ['High','Normal','Null','','','','','','','','','','',''] 
+		v_wind = ['Weak','Strong','Null','','','','','','','','','','','','']
 		v_beach = ['Yes','No','','','','','','','','','','','','','']#classe
 		for row in dados:
 			day = row[0]
@@ -46,43 +46,64 @@ def main():
 			ocorrencia_r_wind[i] = winds.count(v_wind[i])
 			ocorrencia_r_beach[i] = beachs.count(v_beach[i])
 		
+		#entropia exemplos
 		count_y = beachs.count(v_beach[0])
 		count_n = beachs.count(v_beach[1])
 		entropia_exemplos = -ocorrencia_r_beach[0]/n_exemplos * math.log(ocorrencia_r_beach[0]/n_exemplos, 2) - ocorrencia_r_beach[1]/n_exemplos * math.log(ocorrencia_r_beach[1]/n_exemplos, 2)
 		
 		print ('\nEntropia dos Exemplos: ' , round(entropia_exemplos,6))
+		#calculo do ganho para a escolha do atributo de decisão
+		ganho_wind = ganho(entropia_exemplos, winds,v_wind, ocorrencia_r_wind, n_exemplos, beachs)
+		ganho_outlook = ganho(entropia_exemplos, outlooks, v_outlook, ocorrencia_r_outlook, n_exemplos, beachs)
+		ganho_humidity = ganho(entropia_exemplos, humiditys, v_humidity, ocorrencia_r_humidity, n_exemplos, beachs)
+		ganho_temperature = ganho(entropia_exemplos,temperatures,v_temperature,ocorrencia_r_temperature,n_exemplos,beachs)
 		
-		'''
-		print(v_outlook,ocorrencia_r_outlook)
-		print(v_temperature,ocorrencia_r_temperature)
-		print(v_humidity,ocorrencia_r_humidity)
-		print(v_wind,ocorrencia_r_wind)
-		print(v_beach,ocorrencia_r_beach)
-		'''
-		
-		print('Ganho atributo Wind :',round(entropia_exemplos - ((ocorrencia_r_wind[0]/n_exemplos)*calc_entropia(winds, v_wind[0], ocorrencia_r_wind[0], beachs)) - ((ocorrencia_r_wind[1]/n_exemplos)*calc_entropia(winds, v_wind[1], ocorrencia_r_wind[1], beachs)),6))
-		
-		print('Ganho atributo Humidity: ',round(entropia_exemplos - ((ocorrencia_r_humidity[0]/n_exemplos)*calc_entropia(humiditys, v_humidity[0], ocorrencia_r_humidity[0], beachs)) - ((ocorrencia_r_humidity[1]/n_exemplos)*calc_entropia(humiditys, v_humidity[1], ocorrencia_r_humidity[1], beachs)),6))
-		
-		print('Ganho atributo Temperature :',round(entropia_exemplos - ((ocorrencia_r_temperature[0]/n_exemplos)*calc_entropia(temperatures, v_temperature[0], ocorrencia_r_temperature[0], beachs)) - ((ocorrencia_r_wind[1]/n_exemplos)*calc_entropia(temperatures, v_temperature[1], ocorrencia_r_temperature[1], beachs)) - ((ocorrencia_r_temperature[2]/n_exemplos)*calc_entropia(temperatures, v_temperature[2], ocorrencia_r_temperature[2], beachs)),6))
-		
-		print('Ganho atributo Outlook :',round(entropia_exemplos - ((ocorrencia_r_outlook[0]/n_exemplos) * calc_entropia(outlooks, v_outlook[0], ocorrencia_r_outlook[0], beachs)) - ((ocorrencia_r_outlook[1]/n_exemplos) * calc_entropia(outlooks, v_outlook[1], ocorrencia_r_outlook[1], beachs)) - ((ocorrencia_r_outlook[2]/n_exemplos) * calc_entropia(outlooks, v_outlook[2], ocorrencia_r_outlook[2], beachs)),6))
-		
-		
-def calc_entropia(atributo_alvo, rotulo_atributo, ocorrencia_rotulo, classes):
-	count_pos = 0
-	count_neg = 0
-	
-	for i in range(len(atributo_alvo)):
-		if atributo_alvo[i]==rotulo_atributo and classes[i]=='Yes':
-			count_pos = count_pos + 1
-		elif atributo_alvo[i]==rotulo_atributo and classes[i]=='No':
-			count_neg = count_neg + 1
-			
-	entropia = -count_pos/ocorrencia_rotulo * math.log((count_pos/ocorrencia_rotulo) if (count_pos/ocorrencia_rotulo) > 0 else 1, 2) - count_neg/ocorrencia_rotulo * math.log((count_neg/ocorrencia_rotulo) if (count_neg/ocorrencia_rotulo)>0 else 1, 2)
+		print('Ganho atributo Wind: ', round(ganho_wind,6))
+		print('Ganho atributo Humidity: ', round(ganho_humidity,6))
+		print('Ganho atributo Temperature: ', round(ganho_temperature,6))
+		print('Ganho atributo Outlook: ', round(ganho_outlook,6))
+
+
+def calc_entropia(atributo_alvo, rotulo_alvo, ocorrencia_rotulo, classes):
+	n_ocorrencias = list(range(2))
+	n_ocorrencias = ocorrencias_classe(atributo_alvo, rotulo_alvo, classes)
+	entropia = -n_ocorrencias[0]/ocorrencia_rotulo * math.log((n_ocorrencias[0]/ocorrencia_rotulo) if (n_ocorrencias[0]/ocorrencia_rotulo) > 0 else 1, 2) - n_ocorrencias[1]/ocorrencia_rotulo * math.log((n_ocorrencias[1]/ocorrencia_rotulo) if (n_ocorrencias[1]/ocorrencia_rotulo)>0 else 1, 2)
 	entropia = round(entropia,6)
 	return entropia
 
+def ocorrencias_classe(atributo_alvo, rotulo_atributo, classes):
+	ocorrencia = list(range(2))
+	ocorrencia[0] = 0
+	ocorrencia[1] = 0
+	for i in range(len(atributo_alvo)):
+		if atributo_alvo[i]==rotulo_atributo and classes[i]=='Yes':
+			ocorrencia[0] = ocorrencia[0] + 1
+		elif atributo_alvo[i]==rotulo_atributo and classes[i]=='No':
+			ocorrencia[1] = ocorrencia[1] + 1
+	return ocorrencia
+
+def cria_arvore(rotulo1, rotulo2, rotulo3, rotulo4, rotulo_raiz, classes):#incompleto
+	if classes.count('Yes') == 14:
+		resposta = list(range(2))
+		resposta[0] = rotulo_raiz
+		resposta[1] = 'Yes'
+		return resposta
+	elif classes.count('No') == 14:
+		resposta = list(range(2))
+		resposta[0] = rotulo_raiz
+		resposta[1] = 'No'
+		return resposta
+
+def ganho(entropia, atributo,valores_rotulo, ocorrencias_rotulo, n_exemplos, classes):
+	ganho = entropia
+	laco = 0
+	if valores_rotulo[2]=='Null':
+		laco = 2
+	else:
+		laco = 3
+	for i in range(laco):
+		ganho -= ocorrencias_rotulo[i]/n_exemplos * calc_entropia(atributo, valores_rotulo[i], ocorrencias_rotulo[i], classes)
+	return round(ganho,6)
 
 
 main()
