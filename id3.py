@@ -69,6 +69,7 @@ def main():
 		print('Ganho atributo Temperature: ', round(ganho_temperature,6))
 		print('Ganho atributo Outlook: ', round(ganho_outlook,6))
 
+
 def calc_entropia(atributo_alvo, rotulo_alvo, ocorrencia_rotulo, classes):
 	n_ocorrencias = list(range(2))
 	n_ocorrencias = ocorrencias_classe(atributo_alvo, rotulo_alvo, classes)
@@ -88,18 +89,6 @@ def ocorrencias_classe(atributo_alvo, rotulo_atributo, classes):
 			ocorrencia[1] = ocorrencia[1] + 1
 	return ocorrencia
 
-def cria_arvore(rotulo1, rotulo2, rotulo3, rotulo4, rotulo_raiz, classes):#incompleto
-	if classes.count('Yes') == 14:
-		resposta = list(range(2))
-		resposta[0] = rotulo_raiz
-		resposta[1] = 'Yes'
-		return resposta
-	elif classes.count('No') == 14:
-		resposta = list(range(2))
-		resposta[0] = rotulo_raiz
-		resposta[1] = 'No'
-		return resposta
-
 def ganho(entropia, atributo,valores_rotulo, ocorrencias_rotulo, n_exemplos, classes):
 	ganho = entropia
 	laco = 0
@@ -110,5 +99,27 @@ def ganho(entropia, atributo,valores_rotulo, ocorrencias_rotulo, n_exemplos, cla
 	for i in range(laco):
 		ganho -= ocorrencias_rotulo[i]/n_exemplos * calc_entropia(atributo, valores_rotulo[i], ocorrencias_rotulo[i], classes)
 	return round(ganho,6)
+
+def cria_arvore(atributo1, atributo2, atributo3, rotulo_raiz, classes):#incompleto
+	if classes.count('Yes') == 14:
+		raiz = list(range(2))
+		raiz[0] = rotulo_raiz[0]
+		raiz[1] = 'Yes'
+		return raiz
+	elif classes.count('No') == 14:
+		raiz = list(range(2))
+		raiz[0] = rotulo_raiz[0]
+		raiz[1] = 'No'
+		return raiz
+	elif len(atributo1)==0 and len(atributo2)==0 and len(atributo3)==0:
+		raiz = list(range(2))
+		raiz[0] = rotulo_raiz[0]
+		if classes.count('Yes') >= classes.count('No'):
+			raiz[1] = 'Yes'
+			return raiz
+		else: 
+			raiz[1] = 'No'
+			return raiz
+
 
 main()
